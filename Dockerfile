@@ -59,21 +59,17 @@ RUN yes | .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID
 RUN yes | .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_SDK_ROOT}/../ "system-images;android-31;google_apis;arm64-v8a"
 
 # Manually put licenses to the proper folder
-RUN rm -rf ${ANDROID_SDK_ROOT}/../licenses && \
-	mkdir ${ANDROID_SDK_ROOT}/../licenses && \
-	touch android-googletv-license && echo '601085b94cd77f0b54ff86406957099ebe79c4d6' > android-googletv-license && \
-	touch android-sdk-arm-dbt-license && echo '859f317696f67ef3d7f30a50a5560e7834b43903' > android-sdk-arm-dbt-license && \
-	touch android-sdk-license && echo '24333f8a63b6825ea9c5514f83c2829b004d1fee' > android-sdk-license && \
-	touch android-sdk-preview-license && echo '84831b9409646a918e30573bab4c9c91346d8abd' > android-sdk-preview-license && \
-	touch google-gdk-license && echo '33b6a2b64607f11b759f320ef9dff4ae5c47d97a' > google-gdk-license && \
-	touch intel-android-extra-license && echo 'd975f751698a77b662f1254ddbeed3901e976f5a' > intel-android-extra-license && \
-	touch mips-android-sysimage-license && echo 'e9acab5b5fbb560a72cfaecce8946896ff6aab9d' > mips-android-sysimage-license
+RUN rm -rf ${ANDROID_SDK_ROOT}/../licenses
+RUN	mkdir ${ANDROID_SDK_ROOT}/../licenses
+RUN curl -s https://gist.githubusercontent.com/mirjalal/87085ddeecfd2250ba7fd1d7c04cc3ba/raw/b94b86c01eab75ef8147fbe0a433783729ec53af/android-googletv-license > /usr/local/testfolder/android-googletv-license
+RUN curl -s https://gist.githubusercontent.com/mirjalal/85554901380bab49ad7be1da1ef14b60/raw/308508a2c823e7896fe0495f5a95ca82e94a31f2/android-sdk-arm-dbt-license > /usr/local/testfolder/android-sdk-arm-dbt-license
+RUN curl -s https://gist.githubusercontent.com/mirjalal/2d7ec76c4216fd939678abff6b5e2d6a/raw/13a8b48abed3322126b9da1a3ad4b975d84e1619/android-sdk-license > /usr/local/testfolder/android-sdk-license
+RUN curl -s https://gist.githubusercontent.com/mirjalal/bd29e13fb6fbe7b8b1e7abf9a95ca410/raw/3d993aede0516a726225baa174698bfcbee2bc44/android-sdk-preview-license > /usr/local/testfolder/android-sdk-preview-license
+RUN curl -s https://gist.githubusercontent.com/mirjalal/dea38ec796779c556d60d48f2e29e5e9/raw/1db3840c1db2ed3948683401159f787ccaed2806/google-gdk-license > /usr/local/testfolder/google-gdk-license
+RUN curl -s https://gist.githubusercontent.com/mirjalal/1d8b12819b7b02dc79aca0dafeb0866b/raw/be725e7c1504cd1f98b801d154c018a1804f1574/intel-android-extra-license > /usr/local/testfolder/intel-android-extra-license
+RUN curl -s https://gist.githubusercontent.com/mirjalal/0ca7519b518580aee129e3599201d9df/raw/bdd01429ab0bb599376111c2571c804aacb06941/mips-android-sysimage-license > /usr/local/testfolder/mips-android-sysimage-license
 
 # RUN .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_SDK_ROOT} --update
-
-# Get required emulator waiter
-# RUN curl -s https://raw.githubusercontent.com/travis-ci/travis-cookbooks/0f497eb71291b52a703143c5cd63a217c8766dc9/community-cookbooks/android-sdk/files/default/android-wait-for-emulator > /tmp/android-wait-for-emulator
-# RUN chmod +x /tmp/android-wait-for-emulator
 
 # Expose ADB, ADB control and VNC ports
 EXPOSE 22
