@@ -18,7 +18,7 @@ jobs:
         username: ${{ secrets.DOCKER_UNAME }}
         password: ${{ secrets.DOCKER_TKN }}
     - name: Build and push Docker images
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v1
       with:
         username: ${{ secrets.DOCKER_UNAME }}
         password: ${{ secrets.DOCKER_TKN }}
@@ -28,7 +28,7 @@ jobs:
         tag_with_ref: true
         tag_with_sha: true
     - name: Build and push Docker images
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v1
       with:
         username: ${{ secrets.DOCKER_UNAME }}
         password: ${{ secrets.DOCKER_TKN }}
