@@ -2,84 +2,13 @@ FROM amd64/debian
 
 MAINTAINER Mirjalal Talishinski "mirjalal.talishinski@gmail.com"
 
+ENV ANDROID_HOME="/opt/android-sdk" \
+ENV ANDROID_NDK="/opt/android-ndk" \
+ENV FLUTTER_HOME="/opt/flutter" \
+ENV JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/"
+
+# Specially for SSH access and port redirection
 ENV ROOTPASSWORD android
-ENV DOCKER_ANDROID_LANG en_US
-ENV DOCKER_ANDROID_DISPLAY_NAME androidci-docker
-
-# Never ask for confirmations
-ENV DEBIAN_FRONTEND noninteractive
-
-RUN apt-get update \
-  && mkdir -p /usr/share/man/man1 \
-  && apt-get install -y \
-    git xvfb apt \
-    locales sudo openssh-client ca-certificates tar gzip parallel \
-    net-tools netcat unzip zip bzip2 gnupg curl wget make \
-	ssh openssh-server socat libpulse0 xcb
-
-# Set timezone to UTC by default
-# RUN ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime
-
-# Use unicode
-RUN locale-gen C.UTF-8 || true
-ENV LANG=C.UTF-8
-
-CMD ["/bin/sh"]
-
-ARG cmdline_tools=https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
-ARG android_home=/opt/android/sdk
-
-RUN sudo apt-get update && \
-    sudo apt-get install --yes \
-        xvfb lib32z1 lib32stdc++6 build-essential \
-        libcurl4-openssl-dev libglu1-mesa libxi-dev libxmu-dev \
-        libglu1-mesa-dev openjdk-11-jdk && \
-    sudo rm -rf /var/lib/apt/lists/*
-	
-RUN sudo mkdir -p ${android_home}/cmdline-tools && \
-    wget -O /tmp/cmdline-tools.zip -t 5 "${cmdline_tools}" && \
-    unzip -q /tmp/cmdline-tools.zip -d ${android_home} && \
-    rm /tmp/cmdline-tools.zip
-
-ENV ANDROID_HOME ${android_home}
-ENV ANDROID_SDK_ROOT ${android_home}
-ENV ADB_INSTALL_TIMEOUT 120
-
-ENV PATH=${ANDROID_SDK_ROOT}/platforms:${ANDROID_SDK_ROOT}/build-tools:${ANDROID_SDK_ROOT}/system-images:${ANDROID_SDK_ROOT}/emulator:${ANDROID_SDK_ROOT}/cmdline-tools/tools/bin:${ANDROID_SDK_ROOT}/tools:${ANDROID_SDK_ROOT}/tools/bin:${ANDROID_SDK_ROOT}/platform-tools:${PATH}
-
-RUN mkdir ~/.android && echo '### User Sources for Android SDK Manager' > ~/.android/repositories.cfg
-		
-RUN yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" --licenses > /dev/null
-
-RUN echo "platforms" && \
-    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" \
-        "platforms;android-30" > /dev/null
-
-RUN echo "platform tools" && \
-    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" \
-        "platform-tools" > /dev/null
-
-RUN echo "build tools 25-30" && \
-    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" \
-        "build-tools;30.0.3"  > /dev/null
-
-RUN echo "emulator" && \
-    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" "emulator" > /dev/null
-
-# Manually put licenses to the proper folder
-RUN sudo rm -rf "/opt/android/sdk/licenses"
-RUN	sudo mkdir "/opt/android/sdk/licenses"
-RUN curl -s https://gist.githubusercontent.com/mirjalal/87085ddeecfd2250ba7fd1d7c04cc3ba/raw/b94b86c01eab75ef8147fbe0a433783729ec53af/android-googletv-license > /opt/android/sdk/licenses/android-googletv-license
-RUN curl -s https://gist.githubusercontent.com/mirjalal/85554901380bab49ad7be1da1ef14b60/raw/308508a2c823e7896fe0495f5a95ca82e94a31f2/android-sdk-arm-dbt-license > /opt/android/sdk/licenses/android-sdk-arm-dbt-license
-RUN curl -s https://gist.githubusercontent.com/mirjalal/2d7ec76c4216fd939678abff6b5e2d6a/raw/13a8b48abed3322126b9da1a3ad4b975d84e1619/android-sdk-license > /opt/android/sdk/licenses/android-sdk-license
-RUN curl -s https://gist.githubusercontent.com/mirjalal/bd29e13fb6fbe7b8b1e7abf9a95ca410/raw/3d993aede0516a726225baa174698bfcbee2bc44/android-sdk-preview-license > /opt/android/sdk/licenses/android-sdk-preview-license
-RUN curl -s https://gist.githubusercontent.com/mirjalal/dea38ec796779c556d60d48f2e29e5e9/raw/1db3840c1db2ed3948683401159f787ccaed2806/google-gdk-license > /opt/android/sdk/licenses/google-gdk-license
-RUN curl -s https://gist.githubusercontent.com/mirjalal/1d8b12819b7b02dc79aca0dafeb0866b/raw/be725e7c1504cd1f98b801d154c018a1804f1574/intel-android-extra-license > /opt/android/sdk/licenses/intel-android-extra-license
-RUN curl -s https://gist.githubusercontent.com/mirjalal/0ca7519b518580aee129e3599201d9df/raw/bdd01429ab0bb599376111c2571c804aacb06941/mips-android-sysimage-license > /opt/android/sdk/licenses/mips-android-sysimage-license
-
-RUN .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" --licenses
-
-# RUN .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_SDK_ROOT} --update
 
 # Expose ADB, ADB control and VNC ports
 EXPOSE 22
@@ -88,33 +17,208 @@ EXPOSE 5554
 EXPOSE 5555
 EXPOSE 5900
 
+# Get the latest version from https://developer.android.com/studio/index.html
+ENV ANDROID_SDK_TOOLS_VERSION="7583922"
+
+# Get the latest version from https://developer.android.com/ndk/downloads/index.html
+ENV ANDROID_NDK_VERSION="r21e"
+
+# nodejs version
+ENV NODE_VERSION="12.x"
+
+# Set locale
+ENV LANG="en_US.UTF-8"
+ENV LANGUAGE="en_US.UTF-8"
+ENV LC_ALL="en_US.UTF-8"
+
+RUN apt-get clean && \
+    apt-get update -qq && \
+    apt-get install -qq -y apt-utils locales && \
+    locale-gen $LANG
+
+ENV DEBIAN_FRONTEND="noninteractive"
+ENV TERM=dumb
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN echo "debconf shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections && \
+RUN echo "debconf shared/accepted-oracle-license-v1-1 seen true" | debconf-set-selections
+
+# Variables must be references after they are created
+ENV ANDROID_SDK_HOME="$ANDROID_HOME"
+ENV ANDROID_NDK_HOME="$ANDROID_NDK/android-ndk-$ANDROID_NDK_VERSION"
+
+ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/tools/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
+
+WORKDIR /tmp
+
+# Installing packages
+RUN apt-get update -qq > /dev/null && \
+    apt-get install -qq locales > /dev/null && \
+    locale-gen "$LANG" > /dev/null && \
+    apt-get install -qq --no-install-recommends \
+        autoconf \
+        build-essential \
+        curl \
+        file \
+        git \
+        gpg-agent \
+        less \
+        lib32stdc++6 \
+        lib32z1 \
+        lib32z1-dev \
+        lib32ncurses5 \
+        libc6-dev \
+        libgmp-dev \
+        libmpc-dev \
+        libmpfr-dev \
+        libxslt-dev \
+        libxml2-dev \
+        m4 \
+        ncurses-dev \
+        ocaml \
+        openjdk-11-jdk \
+        openssh-client \
+        openssh-server \
+        pkg-config \
+		ssh \
+        ruby-full \
+        software-properties-common \
+        tzdata \
+        unzip \
+        vim-tiny \
+        wget \
+        zip \
+        zlib1g-dev > /dev/null
+
+RUN echo "set timezone" && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN echo "nodejs, npm, cordova, ionic, react-native" && \
+    curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} | bash - > /dev/null && \
+    apt-get install -qq nodejs > /dev/null && \
+    apt-get clean > /dev/null && \
+    curl -sS -k https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - > /dev/null && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list > /dev/null && \
+    apt-get update -qq > /dev/null && \
+    apt-get install -qq yarn > /dev/null && \
+    rm -rf /var/lib/apt/lists/ && \
+    npm install --quiet -g npm > /dev/null && \
+    npm install --quiet -g \
+        bower \
+        cordova \
+        eslint \
+        gulp \
+        ionic \
+        jshint \
+        karma-cli \
+        mocha \
+        node-gyp \
+        npm-check-updates \
+        react-native-cli > /dev/null && \
+    npm cache clean --force > /dev/null && \
+    rm -rf /tmp/* /var/tmp/*
+
+# Install Android SDK
+RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
+    wget --quiet --output-document=sdk-tools.zip \
+        "https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip" && \
+    mkdir --parents "$ANDROID_HOME" && \
+    unzip -q sdk-tools.zip -d "$ANDROID_HOME" && \
+    rm --force sdk-tools.zip
+
+RUN echo "ndk ${ANDROID_NDK_VERSION}" && \
+    wget --quiet --output-document=android-ndk.zip \
+    "http://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip" && \
+    mkdir --parents "$ANDROID_NDK_HOME" && \
+    unzip -q android-ndk.zip -d "$ANDROID_NDK" && \
+    rm --force android-ndk.zip
+
+# Install SDKs
+# Please keep these in descending order!
+# The `yes` is for accepting all non-standard tool licenses.
+RUN mkdir --parents "$HOME/.android/" && \
+    echo '### User Sources for Android SDK Manager' > \
+        "$HOME/.android/repositories.cfg" && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null
+
+RUN echo "platforms"
+RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager "platforms;android-30" > /dev/null
+
+RUN echo "platform tools"
+RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager "platform-tools" > /dev/null
+
+RUN echo "build tools 30.0.3"
+RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager "build-tools;30.0.3" > /dev/null
+
+RUN echo "emulator"
+RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" > /dev/null
+
+RUN echo "kotlin" && \
+    wget --quiet -O sdk.install.sh "https://get.sdkman.io" && \
+    bash -c "bash ./sdk.install.sh > /dev/null && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin" && \
+    rm -f sdk.install.sh
+
+RUN echo "Flutter sdk" && \
+    cd /opt && \
+    wget --quiet https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_2.2.3-stable.tar.xz -O flutter.tar.xz && \
+    tar xf flutter.tar.xz && \
+    flutter config --no-analytics && \
+    rm -f flutter.tar.xz
+
+# Copy sdk license agreement files.
+RUN mkdir -p $ANDROID_HOME/licenses
+COPY sdk/licenses/* $ANDROID_HOME/licenses/
+
+# Create some jenkins required directory to allow this image run with Jenkins
+RUN mkdir -p /var/lib/jenkins/workspace && \
+    mkdir -p /home/jenkins && \
+    chmod 777 /home/jenkins && \
+    chmod 777 /var/lib/jenkins/workspace && \
+    chmod -R 775 $ANDROID_HOME
+
+COPY Gemfile /Gemfile
+
+RUN echo "fastlane" && \
+    cd / && \
+    gem install bundler --quiet --no-document > /dev/null && \
+    mkdir -p /.fastlane && \
+    chmod 777 /.fastlane && \
+    bundle install --quiet
+
+COPY README.md /README.md
+
+ARG BUILD_DATE=""
+ARG SOURCE_BRANCH=""
+ARG SOURCE_COMMIT=""
+ARG DOCKER_TAG=""
+
+ENV BUILD_DATE=${BUILD_DATE}
+ENV SOURCE_BRANCH=${SOURCE_BRANCH}
+ENV SOURCE_COMMIT=${SOURCE_COMMIT}
+ENV DOCKER_TAG=${DOCKER_TAG}
+
+# Create fake keymap file
+RUN mkdir /usr/local/android-sdk/tools/keymaps
+RUN touch /usr/local/android-sdk/tools/keymaps/en-us
+
 # Run sshd
 RUN mkdir /var/run/sshd && \
-    echo "root:$ROOTPASSWORD" | chpasswd && \
-    sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
-    echo "export VISIBLE=now" >> /etc/profile
+RUN echo "root:$ROOTPASSWORD" | chpasswd && \
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
+RUN echo "export VISIBLE=now" >> /etc/profile
 
 ENV NOTVISIBLE "in users profile"
+# Add entrypoint
+ADD entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
-# Run sshd
-RUN /usr/sbin/sshd
-
-# Detect ip and forward ADB ports outside to outside interface
-RUN ip=$(ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
-RUN socat tcp-listen:5037,bind=$ip,fork tcp:127.0.0.1:5037 &
-RUN socat tcp-listen:5554,bind=$ip,fork tcp:127.0.0.1:5554 &
-RUN socat tcp-listen:5555,bind=$ip,fork tcp:127.0.0.1:5555 &
-
-# Create & start emulator
-RUN echo n | /opt/android/sdk/cmdline-tools/bin/avdmanager create avd --force --name "Android" --abi arm64-v8a --package "system-images;android-31;google_apis;arm64-v8a"
-
-RUN echo no | ./opt/android/sdk/tools/emulator @Android -no-window -no-boot-anim -gpu off -verbose -qemu -usbdevice tablet -vnc :0 &
-
-# Start AVD
-# RUN .${ANDROID_SDK_ROOT}/emulator/emulator @Android &
-# RUN .${ANDROID_SDK_ROOT}/../platform-tools/adb wait-for-device
-# RUN ./tmp/android-wait-for-emulator
-# RUN .${ANDROID_SDK_ROOT}/../platform-tools/adb shell input keyevent 82 &
-
-
+# labels, see http://label-schema.org/
+LABEL maintainer="Mirjalal Talishinski"
+LABEL org.label-schema.schema-version="1.0"
+LABEL org.label-schema.name="mirjalal/android-30"
+LABEL org.label-schema.version="${DOCKER_TAG}"
+# LABEL org.label-schema.usage="/README.md"
+# LABEL org.label-schema.docker.cmd="docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew build'"
+LABEL org.label-schema.build-date="${BUILD_DATE}"
+LABEL org.label-schema.vcs-ref="${SOURCE_COMMIT}@${SOURCE_BRANCH}"
