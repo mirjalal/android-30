@@ -47,25 +47,24 @@ ENV ADB_INSTALL_TIMEOUT 120
 
 ENV PATH=${ANDROID_SDK_ROOT}/platforms:${ANDROID_SDK_ROOT}/build-tools:${ANDROID_SDK_ROOT}/system-images:${ANDROID_SDK_ROOT}/emulator:${ANDROID_SDK_ROOT}/cmdline-tools/tools/bin:${ANDROID_SDK_ROOT}/tools:${ANDROID_SDK_ROOT}/tools/bin:${ANDROID_SDK_ROOT}/platform-tools:${PATH}
 
-RUN mkdir --parents "$HOME/.android/" && \
-    echo '### User Sources for Android SDK Manager' > \
-        "$HOME/.android/repositories.cfg" && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null
+RUN mkdir ~/.android && echo '### User Sources for Android SDK Manager' > ~/.android/repositories.cfg
+		
+RUN yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --licenses > /dev/null
 
 RUN echo "platforms" && \
-    yes | "$ANDROID_HOME"/cmdline-tools/tools/bin/sdkmanager \
+    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager \
         "platforms;android-30" > /dev/null
 
 RUN echo "platform tools" && \
-    yes | "$ANDROID_HOME"/cmdline-tools/tools/bin/sdkmanager \
+    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager \
         "platform-tools" > /dev/null
 
 RUN echo "build tools 25-30" && \
-    yes | "$ANDROID_HOME"/cmdline-tools/tools/bin/sdkmanager \
+    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager \
         "build-tools;30.0.3"  > /dev/null
 
 RUN echo "emulator" && \
-    yes | "$ANDROID_HOME"/cmdline-tools/tools/bin/sdkmanager "emulator" > /dev/null
+    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager "emulator" > /dev/null
 
 # Copy sdk license agreement files.
 RUN mkdir -p $ANDROID_HOME/licenses
