@@ -59,20 +59,17 @@ RUN curl -s https://gist.githubusercontent.com/mirjalal/dea38ec796779c556d60d48f
 RUN curl -s https://gist.githubusercontent.com/mirjalal/1d8b12819b7b02dc79aca0dafeb0866b/raw/be725e7c1504cd1f98b801d154c018a1804f1574/intel-android-extra-license > /opt/android/sdk/licenses/intel-android-extra-license
 RUN curl -s https://gist.githubusercontent.com/mirjalal/0ca7519b518580aee129e3599201d9df/raw/bdd01429ab0bb599376111c2571c804aacb06941/mips-android-sysimage-license > /opt/android/sdk/licenses/mips-android-sysimage-license
 
-RUN echo "platforms" && \
-    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" \
-        "platforms;android-30" 
+RUN echo "platforms"
+RUN yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" "platforms;android-30" 
 
-RUN echo "platform tools" && \
-    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" \
-        "platform-tools" 
+RUN echo "platform tools"
+RUN yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" "platform-tools" 
 
-RUN echo "build tools 25-30" && \
-    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" \
-        "build-tools;30.0.3"  
+RUN echo "build tools 30.0.3"
+RUN yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" "build-tools;30.0.3"  
 
-RUN echo "emulator" && \
-    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" "emulator" 
+RUN echo "emulator"
+RUN yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" "emulator" 
 
 # Copy sdk license agreement files.
 RUN mkdir -p $ANDROID_HOME/licenses
