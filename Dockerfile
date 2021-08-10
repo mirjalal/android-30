@@ -24,12 +24,11 @@ ENV ANDROID_SDK_TOOLS_VERSION="7583922"
 ENV ANDROID_NDK_VERSION="r21e"
 
 # nodejs version
-ENV NODE_VERSION="12.x"
+ENV NODE_VERSION="16.x"
 
 RUN apt-get clean && \
     apt-get update -qq && \
-    apt-get install -qq -y apt-utils locales && \
-    locales
+    apt-get install -qq -y apt-utils locales
 
 # Use unicode
 RUN locale-gen C.UTF-8 || true
