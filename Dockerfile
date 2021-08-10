@@ -125,22 +125,22 @@ RUN echo "ndk ${ANDROID_NDK_VERSION}" && \
 RUN mkdir --parents "$HOME/.android/" && \
     echo '### User Sources for Android SDK Manager' > \
         "$HOME/.android/repositories.cfg" && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null
+    yes | "$ANDROID_HOME"/cmdline-tools/bin/sdkmanager --licenses > /dev/null
 
 RUN echo "platforms" && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+    yes | "$ANDROID_HOME"/cmdline-tools/bin/sdkmanager \
         "platforms;android-30" > /dev/null
 
 RUN echo "platform tools" && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+    yes | "$ANDROID_HOME"/cmdline-tools/bin/sdkmanager \
         "platform-tools" > /dev/null
 
 RUN echo "build tools 25-30" && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+    yes | "$ANDROID_HOME"/cmdline-tools/bin/sdkmanager \
         "build-tools;30.0.3" > /dev/null
 
 RUN echo "emulator"
-RUN yes | $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager "emulator" > /dev/null
+RUN yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "emulator" > /dev/null
 
 RUN echo "kotlin"
 RUN wget --quiet -O sdk.install.sh "https://get.sdkman.io"
