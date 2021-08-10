@@ -184,7 +184,7 @@ RUN echo "fastlane" && \
     chmod 777 /.fastlane && \
     bundle install --quiet
 
-COPY README.md /README.md
+# COPY README.md /README.md
 
 ARG BUILD_DATE=""
 ARG SOURCE_BRANCH=""
