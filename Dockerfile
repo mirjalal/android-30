@@ -2,9 +2,9 @@ FROM amd64/debian
 
 MAINTAINER Mirjalal Talishinski "mirjalal.talishinski@gmail.com"
 
-ENV ANDROID_HOME="/opt/android-sdk" \
-ENV ANDROID_NDK="/opt/android-ndk" \
-ENV FLUTTER_HOME="/opt/flutter" \
+ENV ANDROID_HOME="/opt/android-sdk"
+ENV ANDROID_NDK="/opt/android-ndk"
+ENV FLUTTER_HOME="/opt/flutter"
 ENV JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/"
 
 # Specially for SSH access and port redirection
