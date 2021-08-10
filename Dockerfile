@@ -195,17 +195,17 @@ RUN mkdir $ANDROID_HOME/tools/keymaps
 RUN touch $ANDROID_HOME/tools/keymaps/en-us
 
 # Run sshd
-RUN mkdir /var/run/sshd
-RUN echo "root:$ROOTPASSWORD" | chpasswd
-RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
-RUN echo "export VISIBLE=now" >> /etc/profile
+#RUN mkdir /var/run/sshd
+#RUN echo "root:$ROOTPASSWORD" | chpasswd
+#RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+#RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+#RUN echo "export VISIBLE=now" >> /etc/profile
 
-ENV NOTVISIBLE "in users profile"
+#ENV NOTVISIBLE "in users profile"
 # Add entrypoint
-ADD entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+#ADD entrypoint.sh /entrypoint.sh
+#RUN chmod +x /entrypoint.sh
+#ENTRYPOINT ["/entrypoint.sh"]
 
 # labels, see http://label-schema.org/
 LABEL maintainer="Mirjalal Talishinski"
