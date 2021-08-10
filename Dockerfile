@@ -66,7 +66,7 @@ RUN apt-get update -qq > /dev/null && \
         lib32stdc++6 \
         lib32z1 \
         lib32z1-dev \
-        lib32ncurses5 \
+        lib32ncurses-dev \
         libc6-dev \
         libgmp-dev \
         libmpc-dev \
