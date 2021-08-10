@@ -26,15 +26,16 @@ ENV ANDROID_NDK_VERSION="r21e"
 # nodejs version
 ENV NODE_VERSION="12.x"
 
-# Set locale
-ENV LANG="en_US.UTF-8"
-ENV LANGUAGE="en_US.UTF-8"
-ENV LC_ALL="en_US.UTF-8"
-
 RUN apt-get clean && \
     apt-get update -qq && \
     apt-get install -qq -y apt-utils locales && \
-    locale-gen $LANG
+    locales
+
+# Use unicode
+RUN locale-gen C.UTF-8 || true
+ENV LANG=C.UTF-8
+ENV LANGUAGE=C.UTF-8
+ENV LC_ALL=C.UTF-8
 
 ENV DEBIAN_FRONTEND="noninteractive"
 ENV TERM=dumb
@@ -54,7 +55,6 @@ WORKDIR /tmp
 # Installing packages
 RUN apt-get update -qq > /dev/null && \
     apt-get install -qq locales > /dev/null && \
-    locale-gen "$LANG" > /dev/null && \
     apt-get install -qq --no-install-recommends \
         autoconf \
         build-essential \
@@ -90,55 +90,52 @@ RUN apt-get update -qq > /dev/null && \
         zip \
         zlib1g-dev > /dev/null
 
-RUN echo "set timezone" && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+#RUN echo "set timezone" && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN echo "nodejs, npm, cordova, ionic, react-native" && \
-    curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} | bash - > /dev/null && \
-    apt-get install -qq nodejs > /dev/null && \
-    apt-get clean > /dev/null && \
-    curl -sS -k https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - > /dev/null && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list > /dev/null && \
-    apt-get update -qq > /dev/null && \
-    apt-get install -qq yarn > /dev/null && \
-    rm -rf /var/lib/apt/lists/ && \
-    npm install --quiet -g npm > /dev/null && \
-    npm install --quiet -g \
-        bower \
-        cordova \
-        eslint \
-        gulp \
-        ionic \
-        jshint \
-        karma-cli \
-        mocha \
-        node-gyp \
-        npm-check-updates \
-        react-native-cli > /dev/null && \
-    npm cache clean --force > /dev/null && \
-    rm -rf /tmp/* /var/tmp/*
+#RUN echo "nodejs, npm, cordova, ionic, react-native" && \
+#    curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} | bash - > /dev/null && \
+#    apt-get install -qq nodejs > /dev/null && \
+#    apt-get clean > /dev/null && \
+#    curl -sS -k https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - > /dev/null && \
+#    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list > /dev/null && \
+#    apt-get update -qq > /dev/null && \
+#    apt-get install -qq yarn > /dev/null && \
+#    rm -rf /var/lib/apt/lists/ && \
+#    npm install --quiet -g npm > /dev/null && \
+#    npm install --quiet -g \
+#        bower \
+#        cordova \
+#        eslint \
+#        gulp \
+#        ionic \
+#        jshint \
+#        karma-cli \
+#        mocha \
+#        node-gyp \
+#        npm-check-updates \
+#        react-native-cli > /dev/null && \
+#    npm cache clean --force > /dev/null && \
+#    rm -rf /tmp/* /var/tmp/*
 
 # Install Android SDK
-RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
-    wget --quiet --output-document=sdk-tools.zip \
-        "https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip" && \
-    mkdir --parents "$ANDROID_HOME" && \
-    unzip -q sdk-tools.zip -d "$ANDROID_HOME" && \
-    rm --force sdk-tools.zip
+RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}"
+RUN wget --quiet --output-document=sdk-tools.zip "https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip"
+RUN mkdir --parents "$ANDROID_HOME"
+RUN unzip -q sdk-tools.zip -d "$ANDROID_HOME"
+RUN rm --force sdk-tools.zip
 
-RUN echo "ndk ${ANDROID_NDK_VERSION}" && \
-    wget --quiet --output-document=android-ndk.zip \
-    "http://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip" && \
-    mkdir --parents "$ANDROID_NDK_HOME" && \
-    unzip -q android-ndk.zip -d "$ANDROID_NDK" && \
-    rm --force android-ndk.zip
+RUN echo "ndk ${ANDROID_NDK_VERSION}"
+RUN wget --quiet --output-document=android-ndk.zip "http://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip"
+RUN mkdir --parents "$ANDROID_NDK_HOME"
+RUN unzip -q android-ndk.zip -d "$ANDROID_NDK"
+RUN rm --force android-ndk.zip
 
 # Install SDKs
 # Please keep these in descending order!
 # The `yes` is for accepting all non-standard tool licenses.
-RUN mkdir --parents "$HOME/.android/" && \
-    echo '### User Sources for Android SDK Manager' > \
-        "$HOME/.android/repositories.cfg" && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null
+RUN mkdir --parents "$HOME/.android/"
+RUN echo '### User Sources for Android SDK Manager' > "$HOME/.android/repositories.cfg"
+RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null
 
 RUN echo "platforms"
 RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager "platforms;android-30" > /dev/null
@@ -152,10 +149,10 @@ RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager "build-tools;30.0.3" > /dev/null
 RUN echo "emulator"
 RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" > /dev/null
 
-RUN echo "kotlin" && \
-    wget --quiet -O sdk.install.sh "https://get.sdkman.io" && \
-    bash -c "bash ./sdk.install.sh > /dev/null && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin" && \
-    rm -f sdk.install.sh
+RUN echo "kotlin"
+RUN wget --quiet -O sdk.install.sh "https://get.sdkman.io"
+RUN bash -c "bash ./sdk.install.sh > /dev/null && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin"
+RUN rm -f sdk.install.sh
 
 RUN echo "Flutter sdk" && \
     cd /opt && \
