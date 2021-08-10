@@ -118,13 +118,13 @@ RUN apt-get update -qq > /dev/null && \
 
 # Install Android SDK
 RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}"
-RUN wget --quiet --output-document=sdk-tools.zip "https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip"
+RUN wget --quiet --output-document=sdk-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip"
 RUN mkdir --parents "$ANDROID_HOME"
 RUN unzip -q sdk-tools.zip -d "$ANDROID_HOME"
 RUN rm --force sdk-tools.zip
 
 RUN echo "ndk ${ANDROID_NDK_VERSION}"
-RUN wget --quiet --output-document=android-ndk.zip "http://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip"
+RUN wget --quiet --output-document=android-ndk.zip "http://dl.google.com/android/repository/android-ndk-r21e-linux-x86_64.zip"
 RUN mkdir --parents "$ANDROID_NDK_HOME"
 RUN unzip -q android-ndk.zip -d "$ANDROID_NDK"
 RUN rm --force android-ndk.zip
