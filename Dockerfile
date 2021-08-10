@@ -111,7 +111,7 @@ RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     wget --quiet --output-document=sdk-tools.zip \
         "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip" && \
     mkdir --parents "$ANDROID_HOME" && \
-    unzip -q sdk-tools.zip -d "$ANDROID_HOME"
+    unzip -q sdk-tools.zip -d "$ANDROID_HOME"/cmdline-tools
 ###########
 # IMPORTANT LINE! https://stackoverflow.com/a/65262939/4057688
 RUN mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/tools
