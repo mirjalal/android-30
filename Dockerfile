@@ -52,10 +52,8 @@ ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/tool
 WORKDIR /tmp
 
 # Installing packages
-RUN apt-get update -qq > /dev/null && \
-    apt-get install -qq locales > /dev/null && \
-    apt-get install -qq --no-install-recommends \
-        autoconf \
+RUN apt-get update -qq
+    apt-get install -qq autoconf \
         build-essential \
         curl \
         file \
@@ -87,7 +85,8 @@ RUN apt-get update -qq > /dev/null && \
         vim-tiny \
         wget \
         zip \
-        zlib1g-dev > /dev/null
+        zlib1g-dev \
+        --no-install-recommends
 
 #RUN echo "set timezone" && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -134,19 +133,19 @@ RUN rm --force android-ndk.zip
 # The `yes` is for accepting all non-standard tool licenses.
 RUN mkdir --parents "$HOME/.android/"
 RUN echo '### User Sources for Android SDK Manager' > "$HOME/.android/repositories.cfg"
-RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null
+RUN yes | .$ANDROID_HOME/tools/bin/sdkmanager --licenses > /dev/null
 
 RUN echo "platforms"
-RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager "platforms;android-30" > /dev/null
+RUN yes | .$ANDROID_HOME/tools/bin/sdkmanager "platforms;android-30" > /dev/null
 
 RUN echo "platform tools"
-RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager "platform-tools" > /dev/null
+RUN yes | .$ANDROID_HOME/tools/bin/sdkmanager "platform-tools" > /dev/null
 
 RUN echo "build tools 30.0.3"
-RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager "build-tools;30.0.3" > /dev/null
+RUN yes | .$ANDROID_HOME/tools/bin/sdkmanager "build-tools;30.0.3" > /dev/null
 
 RUN echo "emulator"
-RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" > /dev/null
+RUN yes | .$ANDROID_HOME/tools/bin/sdkmanager "emulator" > /dev/null
 
 RUN echo "kotlin"
 RUN wget --quiet -O sdk.install.sh "https://get.sdkman.io"
