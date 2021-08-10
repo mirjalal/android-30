@@ -55,6 +55,7 @@ RUN yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="/opt/androi
 # Install new Android Tools and System Image for AVD
 RUN yes | .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" "tools"
 RUN yes | .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" "emulator"
+RUN yes | .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" "patcher;v4"
 RUN yes | .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" "platform-tools"
 RUN yes | .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" "build-tools;30.0.3"
 RUN yes | .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" "platforms;android-30"
