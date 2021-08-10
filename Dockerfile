@@ -121,7 +121,10 @@ RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}"
 RUN wget --quiet --output-document=sdk-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip"
 RUN mkdir --parents $ANDROID_HOME
 RUN unzip -q sdk-tools.zip -d $ANDROID_HOME/cmdline-tools
+###########
+# IMPORTANT LINE! https://stackoverflow.com/a/65262939/4057688
 RUN mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/tools
+##########
 RUN rm --force sdk-tools.zip
 
 RUN echo "ndk ${ANDROID_NDK_VERSION}"
@@ -198,10 +201,10 @@ RUN mkdir $ANDROID_HOME/tools/keymaps
 RUN touch $ANDROID_HOME/tools/keymaps/en-us
 
 # Run sshd
-RUN mkdir /var/run/sshd && \
-RUN echo "root:$ROOTPASSWORD" | chpasswd && \
-RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
+RUN mkdir /var/run/sshd
+RUN echo "root:$ROOTPASSWORD" | chpasswd
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
 RUN echo "export VISIBLE=now" >> /etc/profile
 
 ENV NOTVISIBLE "in users profile"
