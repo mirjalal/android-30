@@ -194,8 +194,8 @@ ENV SOURCE_COMMIT=${SOURCE_COMMIT}
 ENV DOCKER_TAG=${DOCKER_TAG}
 
 # Create fake keymap file
-RUN mkdir /usr/local/android-sdk/tools/keymaps
-RUN touch /usr/local/android-sdk/tools/keymaps/en-us
+RUN mkdir $ANDROID_HOME/tools/keymaps
+RUN touch $ANDROID_HOME/tools/keymaps/en-us
 
 # Run sshd
 RUN mkdir /var/run/sshd && \
