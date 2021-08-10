@@ -122,10 +122,9 @@ RUN echo "ndk ${ANDROID_NDK_VERSION}" && \
 # Install SDKs
 # Please keep these in descending order!
 # The `yes` is for accepting all non-standard tool licenses.
-RUN mkdir --parents "$HOME/.android/" && \
-    echo '### User Sources for Android SDK Manager' > \
-        "$HOME/.android/repositories.cfg" && \
-    yes | "$ANDROID_HOME"/cmdline-tools/bin/sdkmanager --licenses > /dev/null
+RUN mkdir --parents "$HOME/.android/"
+RUN echo '### User Sources for Android SDK Manager' > "$HOME/.android/repositories.cfg"
+RUN yes | "$ANDROID_HOME"/cmdline-tools/bin/sdkmanager --licenses > /dev/null
 
 RUN echo "platforms" && \
     yes | "$ANDROID_HOME"/cmdline-tools/bin/sdkmanager \
