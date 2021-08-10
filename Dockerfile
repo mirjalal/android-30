@@ -49,22 +49,22 @@ ENV PATH=${ANDROID_SDK_ROOT}/platforms:${ANDROID_SDK_ROOT}/build-tools:${ANDROID
 
 RUN mkdir ~/.android && echo '### User Sources for Android SDK Manager' > ~/.android/repositories.cfg
 		
-RUN yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --licenses > /dev/null
+RUN yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" --licenses > /dev/null
 
 RUN echo "platforms" && \
-    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager \
+    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" \
         "platforms;android-30" > /dev/null
 
 RUN echo "platform tools" && \
-    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager \
+    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" \
         "platform-tools" > /dev/null
 
 RUN echo "build tools 25-30" && \
-    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager \
+    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" \
         "build-tools;30.0.3"  > /dev/null
 
 RUN echo "emulator" && \
-    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager "emulator" > /dev/null
+    yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="../../" "emulator" > /dev/null
 
 # Copy sdk license agreement files.
 RUN mkdir -p $ANDROID_HOME/licenses
