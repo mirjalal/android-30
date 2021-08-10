@@ -119,8 +119,9 @@ RUN apt-get update -qq > /dev/null && \
 # Install Android SDK
 RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}"
 RUN wget --quiet --output-document=sdk-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip"
-RUN mkdir --parents "$ANDROID_HOME"
-RUN unzip -q sdk-tools.zip -d "$ANDROID_HOME"
+RUN mkdir --parents $ANDROID_HOME
+RUN unzip -q sdk-tools.zip -d $ANDROID_HOME/cmdline-tools
+RUN mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/tools
 RUN rm --force sdk-tools.zip
 
 RUN echo "ndk ${ANDROID_NDK_VERSION}"
@@ -134,19 +135,19 @@ RUN rm --force android-ndk.zip
 # The `yes` is for accepting all non-standard tool licenses.
 RUN mkdir --parents "$HOME/.android/"
 RUN echo '### User Sources for Android SDK Manager' > "$HOME/.android/repositories.cfg"
-RUN yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --licenses > /dev/null
+RUN yes | $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager --licenses > /dev/null
 
 RUN echo "platforms"
-RUN yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platforms;android-30" > /dev/null
+RUN yes | $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager "platforms;android-30" > /dev/null
 
 RUN echo "platform tools"
-RUN yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platform-tools" > /dev/null
+RUN yes | $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager "platform-tools" > /dev/null
 
 RUN echo "build tools 30.0.3"
-RUN yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "build-tools;30.0.3" > /dev/null
+RUN yes | $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager "build-tools;30.0.3" > /dev/null
 
 RUN echo "emulator"
-RUN yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "emulator" > /dev/null
+RUN yes | $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager "emulator" > /dev/null
 
 RUN echo "kotlin"
 RUN wget --quiet -O sdk.install.sh "https://get.sdkman.io"
