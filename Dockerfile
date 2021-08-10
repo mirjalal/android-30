@@ -134,7 +134,7 @@ RUN rm --force android-ndk.zip
 # The `yes` is for accepting all non-standard tool licenses.
 RUN mkdir --parents "$HOME/.android/"
 RUN echo '### User Sources for Android SDK Manager' > "$HOME/.android/repositories.cfg"
-RUN yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null
+RUN yes | .$ANDROID_HOME/tools/bin/sdkmanager --licenses > /dev/null
 
 RUN echo "platforms"
 RUN yes | .$ANDROID_HOME/tools/bin/sdkmanager "platforms;android-30" > /dev/null
