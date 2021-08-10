@@ -50,6 +50,8 @@ ENV PATH=${ANDROID_SDK_ROOT}/platforms:${ANDROID_SDK_ROOT}/build-tools:${ANDROID
 
 RUN mkdir ~/.android && echo '### User Sources for Android SDK Manager' > ~/.android/repositories.cfg
 
+RUN yes | ./opt/android/sdk/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" --licenses
+
 # Install new Android Tools and System Image for AVD
 RUN yes | .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" "tools"
 RUN yes | .${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --sdk_root="/opt/android/sdk" "emulator"
