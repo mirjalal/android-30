@@ -23,8 +23,8 @@ ENV LANG="en_US.UTF-8" \
     LC_ALL="en_US.UTF-8"
 
 RUN apt-get clean && \
-    apt-get update -qq && \
-    apt-get install -qq -y apt-utils locales && \
+    apt-get update && \
+    apt-get install -y apt-utils locales && \
     locale-gen $LANG
 
 ENV DEBIAN_FRONTEND="noninteractive" \
@@ -40,10 +40,10 @@ ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/tool
 WORKDIR /tmp
 
 # Installing packages
-RUN apt-get update -qq > /dev/null && \
-    apt-get install -qq locales > /dev/null && \
-    locale-gen "$LANG" > /dev/null && \
-    apt-get install -qq --no-install-recommends \
+RUN apt-get update && \
+    apt-get install locales && \
+    locale-gen "$LANG" && \
+    apt-get install -y --no-install-recommends \
         autoconf \
         build-essential \
         curl \
@@ -64,7 +64,6 @@ RUN apt-get update -qq > /dev/null && \
         m4 \
         ncurses-dev \
         ocaml \
-        openjdk-8-jdk \
         openjdk-11-jdk \
         openssh-client \
         pkg-config \
@@ -75,23 +74,23 @@ RUN apt-get update -qq > /dev/null && \
         vim-tiny \
         wget \
         zip \
-        zlib1g-dev > /dev/null && \
+        zlib1g-dev && \
     echo "set timezone" && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
     echo "nodejs, npm, cordova, ionic, react-native" && \
     curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} \
-        | bash - > /dev/null && \
-    apt-get install -qq nodejs > /dev/null && \
-    apt-get clean > /dev/null && \
+        | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean && \
     curl -sS -k https://dl.yarnpkg.com/debian/pubkey.gpg \
-        | apt-key add - > /dev/null && \
+        | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" \
-        | tee /etc/apt/sources.list.d/yarn.list > /dev/null && \
-    apt-get update -qq > /dev/null && \
-    apt-get install -qq yarn > /dev/null && \
+        | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && \
+    apt-get install -y yarn && \
     rm -rf /var/lib/apt/lists/ && \
-    npm install --quiet -g npm > /dev/null && \
-    npm install --quiet -g \
+    npm install -g npm && \
+    npm install -g \
         bower \
         cordova \
         eslint \
@@ -102,13 +101,13 @@ RUN apt-get update -qq > /dev/null && \
         mocha \
         node-gyp \
         npm-check-updates \
-        react-native-cli > /dev/null && \
-    npm cache clean --force > /dev/null && \
+        react-native-cli && \
+    npm cache clean --force && \
     rm -rf /tmp/* /var/tmp/*
 
 # Install Android SDK
 RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
-    wget --quiet --output-document=sdk-tools.zip \
+    wget --output-document=sdk-tools.zip \
         "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip" && \
     mkdir --parents "$ANDROID_HOME" && \
     unzip -q sdk-tools.zip -d "$ANDROID_HOME"/cmdline-tools
@@ -119,7 +118,7 @@ RUN mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/too
 RUN rm --force sdk-tools.zip
 
 RUN echo "ndk ${ANDROID_NDK_VERSION}" && \
-    wget --quiet --output-document=android-ndk.zip \
+    wget --output-document=android-ndk.zip \
     "http://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip" && \
     mkdir --parents "$ANDROID_NDK_HOME" && \
     unzip -q android-ndk.zip -d "$ANDROID_NDK" && \
@@ -129,31 +128,32 @@ RUN echo "ndk ${ANDROID_NDK_VERSION}" && \
 # Please keep these in descending order!
 # The `yes` is for accepting all non-standard tool licenses.
 RUN mkdir ~/.android && echo '### User Sources for Android SDK Manager' > ~/.android/repositories.cfg
-RUN yes | "$ANDROID_HOME"/cmdline-tools/tools/bin/sdkmanager --licenses > /dev/null
+
+RUN yes | "$ANDROID_HOME"/cmdline-tools/tools/bin/sdkmanager --licenses
 
 RUN echo "platforms" && \
     yes | "$ANDROID_HOME"/cmdline-tools/tools/bin/sdkmanager \
-        "platforms;android-30" > /dev/null
+        "platforms;android-30"
 
 RUN echo "platform tools" && \
     yes | "$ANDROID_HOME"/cmdline-tools/tools/bin/sdkmanager \
-        "platform-tools" > /dev/null
+        "platform-tools"
 
 RUN echo "build tools 25-30" && \
     yes | "$ANDROID_HOME"/cmdline-tools/tools/bin/sdkmanager \
-        "build-tools;30.0.3" > /dev/null
+        "build-tools;30.0.3"
 
 RUN echo "emulator" && \
-    yes | "$ANDROID_HOME"/cmdline-tools/tools/bin/sdkmanager "emulator" > /dev/null
+    yes | "$ANDROID_HOME"/cmdline-tools/tools/bin/sdkmanager "emulator"
 
 RUN echo "kotlin" && \
-    wget --quiet -O sdk.install.sh "https://get.sdkman.io" && \
-    bash -c "bash ./sdk.install.sh > /dev/null && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin" && \
+    wget -O sdk.install.sh "https://get.sdkman.io" && \
+    bash -c "bash ./sdk.install.sh && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin" && \
     rm -f sdk.install.sh
 
 RUN echo "Flutter sdk" && \
     cd /opt && \
-    wget --quiet https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_2.2.0-stable.tar.xz -O flutter.tar.xz && \
+    wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_2.2.0-stable.tar.xz -O flutter.tar.xz && \
     tar xf flutter.tar.xz && \
     flutter config --no-analytics && \
     rm -f flutter.tar.xz
@@ -173,7 +173,7 @@ COPY Gemfile /Gemfile
 
 RUN echo "fastlane" && \
     cd / && \
-    gem install bundler --quiet --no-document > /dev/null && \
+    gem install bundler --no-document && \
     mkdir -p /.fastlane && \
     chmod 777 /.fastlane && \
     bundle install --quiet
